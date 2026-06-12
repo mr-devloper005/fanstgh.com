@@ -1,23 +1,35 @@
 import type { CSSProperties } from 'react'
 
 export const editableRootStyle = {
-  '--slot4-page-bg': '#fff9f2',
-  '--slot4-page-text': '#111111',
-  '--slot4-panel-bg': '#fff3e8',
+  // bizMap-inspired directory palette: clean white surfaces, violet primary,
+  // deep-indigo hero/footer, green "open now" cues, amber rating stars.
+  '--slot4-page-bg': '#f7f7fb',
+  '--slot4-page-text': '#1b1530',
+  '--slot4-panel-bg': '#f3effc',
   '--slot4-surface-bg': '#ffffff',
-  '--slot4-muted-text': '#4f463f',
-  '--slot4-soft-muted-text': '#6b6258',
-  '--slot4-accent': '#ff6600',
-  '--slot4-accent-fill': '#ff6600',
-  '--slot4-accent-soft': '#d1e0ff',
-  '--slot4-dark-bg': '#111111',
+  '--slot4-muted-text': '#5d5775',
+  '--slot4-soft-muted-text': '#7a7490',
+  '--slot4-accent': '#6d28d9',
+  '--slot4-accent-fill': '#6d28d9',
+  '--slot4-accent-soft': '#ede9fe',
+  '--slot4-dark-bg': '#15102a',
   '--slot4-dark-text': '#ffffff',
-  '--slot4-media-bg': '#e9e2da',
-  '--slot4-cream': '#fdf1e5',
-  '--slot4-warm': '#fff9f2',
-  '--slot4-lavender': '#d1e0ff',
-  '--slot4-gray': '#f6f6f6',
-  '--slot4-body-gradient': 'linear-gradient(180deg, #fdf1e5 0%, #fff9f2 38%, #f6f6f6 100%)',
+  '--slot4-media-bg': '#e9e6f3',
+  '--slot4-cream': '#f6f3fd',
+  '--slot4-warm': '#ffffff',
+  '--slot4-lavender': '#ede9fe',
+  '--slot4-gray': '#f4f4f8',
+  '--slot4-green': '#22c55e',
+  '--slot4-star': '#f59e0b',
+  '--slot4-body-gradient': 'linear-gradient(180deg, #ffffff 0%, #f7f7fb 45%, #f4f4f8 100%)',
+  // Shared layout + chrome tokens consumed across every editable page (navbar, footer,
+  // archives, detail pages, auth, search, create). Defining them globally keeps page
+  // widths "normal" instead of stretching edge-to-edge, and keeps borders/colors aligned
+  // with the home palette so the whole site feels like one product.
+  '--editable-container': '1200px',
+  '--editable-border': 'rgba(27,21,48,0.08)',
+  '--editable-page-bg': '#f7f7fb',
+  '--editable-page-text': '#1b1530',
 } as CSSProperties
 
 export const editablePalette = {
@@ -71,9 +83,9 @@ export const editableDesignContract = {
     dark: `rounded-2xl ${editablePalette.darkBg} ${editablePalette.darkText} ${editablePalette.shadowStrong}`,
   },
   button: {
-    primary: `inline-flex items-center justify-center rounded-full ${editablePalette.darkBg} px-8 py-3.5 text-sm font-semibold text-white transition hover:opacity-90`,
-    secondary: `inline-flex items-center justify-center rounded-full border ${editablePalette.border} ${editablePalette.surfaceBg} px-8 py-3.5 text-sm font-semibold ${editablePalette.surfaceText} transition hover:bg-black/[0.03]`,
-    accent: `inline-flex items-center justify-center rounded-full ${editablePalette.accentBg} px-8 py-3.5 text-sm font-semibold text-white transition hover:opacity-90`,
+    primary: `inline-flex items-center justify-center gap-2 rounded-full ${editablePalette.accentBg} px-8 py-3.5 text-sm font-bold text-white shadow-[0_10px_30px_rgba(109,40,217,0.30)] transition hover:opacity-90`,
+    secondary: `inline-flex items-center justify-center gap-2 rounded-full border ${editablePalette.border} ${editablePalette.surfaceBg} px-8 py-3.5 text-sm font-bold ${editablePalette.surfaceText} transition hover:bg-black/[0.03]`,
+    accent: `inline-flex items-center justify-center gap-2 rounded-full ${editablePalette.darkBg} px-8 py-3.5 text-sm font-bold text-white transition hover:opacity-90`,
   },
   media: {
     frame: `relative overflow-hidden rounded-xl ${editablePalette.mediaBg}`,

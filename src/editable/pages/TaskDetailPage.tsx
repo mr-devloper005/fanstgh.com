@@ -7,7 +7,6 @@ import { buildPostUrl, fetchArticleComments, fetchTaskPostBySlug, fetchTaskPosts
 import { getTaskConfig, SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import type { SitePost } from '@/lib/site-connector'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
-import { getVisualPreset, visualSystem } from '@/editable/theme/visual-system'
 
 export const revalidate = 3
 
@@ -149,8 +148,8 @@ const mapSrcFor = (post: SitePost) => {
 }
 
 export function TaskDetailView({ task, post, related, comments = [] }: { task: TaskKey; post: SitePost; related: SitePost[]; comments?: Array<{ id: string; name: string; comment: string; createdAt: string }> }) {
-  const preset = getVisualPreset(visualSystem.recommendedPreset as any)
-  const detailVars = { '--detail-bg': preset.colors.background, '--detail-text': preset.colors.foreground, '--detail-surface': preset.colors.surface, '--detail-accent': preset.colors.accent } as CSSProperties
+  // Match the warm home-page palette so detail pages feel like the same product.
+  const detailVars = { '--detail-bg': '#f7f7fb', '--detail-text': '#1b1530', '--detail-surface': '#ffffff', '--detail-accent': '#6d28d9' } as CSSProperties
 
   return (
     <EditableSiteShell>
@@ -195,38 +194,130 @@ function ArticleDetail({ post, related, comments }: { post: SitePost; related: S
 
 function ListingDetail({ post, related }: { post: SitePost; related: SitePost[] }) {
   const images = getImages(post)
-  const logo = images[0]
+  const banner = images[0]
+  const logo = images[1] || images[0]
   const address = cleanAddressField(post, ['address', 'location', 'city'])
   const phone = getField(post, ['phone', 'telephone', 'mobile'])
   const email = getField(post, ['email'])
   const website = getField(post, ['website', 'url'])
+  const category = categoryOf(post, 'Business')
+  const tags = (post.tags || []).filter(Boolean).slice(0, 8)
   const mapSrc = mapSrcFor(post)
   return (
-    <section className="mx-auto max-w-[var(--editable-container)] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-      <BackLink task="listing" />
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
-        <article className="rounded-[2.8rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_30px_90px_rgba(15,23,42,0.09)] sm:p-9">
-          <div className="grid gap-6 sm:grid-cols-[150px_1fr]">
-            <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-[2rem] bg-[var(--detail-bg)] ring-1 ring-[var(--editable-border)]">
-              {logo ? <img src={logo} alt="" className="h-full w-full object-cover" /> : <Building2 className="h-14 w-14 opacity-40" />}
+    <>
+      {/* Hero banner: listing photo under a deep violet overlay, identity bottom-left, actions bottom-right */}
+      <section className="relative overflow-hidden bg-[#1c1038] text-white">
+        {banner ? <img src={banner} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" /> : null}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(34,16,73,0.55)_0%,rgba(22,10,50,0.92)_100%)]" />
+        <div className="relative mx-auto max-w-[var(--editable-container)] px-4 pb-10 pt-8 sm:px-6 lg:px-8">
+          <Link href="/listing" className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-black text-white backdrop-blur transition hover:bg-white hover:text-[#1b1530]">
+            <ArrowLeft className="h-4 w-4" /> Back to listings
+          </Link>
+          <div className="mt-12 flex flex-wrap items-end justify-between gap-6">
+            <div className="flex min-w-0 items-end gap-5">
+              <span className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white/90 bg-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+                {logo ? <img src={logo} alt="" className="h-full w-full object-cover" /> : <Building2 className="h-10 w-10 text-[#6d28d9]" />}
+              </span>
+              <div className="min-w-0">
+                <p className="inline-flex items-center gap-2 rounded-full bg-[#6d28d9] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-white">{category}</p>
+                <h1 className="mt-3 text-3xl font-black leading-[1.02] tracking-[-0.04em] sm:text-5xl">{post.title}</h1>
+                {address ? <p className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-white/80"><MapPin className="h-4 w-4 text-[#c4b5fd]" /> {address}</p> : null}
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--detail-accent)]">Business listing</p>
-              <h1 className="mt-3 text-4xl font-black leading-[0.98] tracking-[-0.07em] sm:text-6xl">{post.title}</h1>
-              <p className="mt-5 max-w-3xl text-base leading-8 opacity-70">{summaryText(post)}</p>
+            <div className="flex flex-wrap gap-3">
+              {phone ? <a href={`tel:${phone}`} className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-black backdrop-blur transition hover:bg-white hover:text-[#1b1530]"><Phone className="h-4 w-4" /> Call</a> : null}
+              {email ? <a href={`mailto:${email}`} className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-black backdrop-blur transition hover:bg-white hover:text-[#1b1530]"><Mail className="h-4 w-4" /> Email</a> : null}
+              {website ? <Link href={website} target="_blank" rel="nofollow noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#6d28d9] px-5 py-2.5 text-sm font-black text-white shadow-[0_10px_30px_rgba(109,40,217,0.45)] transition hover:bg-[#5b21b6]"><Globe2 className="h-4 w-4" /> Visit website</Link> : null}
             </div>
           </div>
-          <InfoGrid items={[['Location', address, MapPin], ['Phone', phone, Phone], ['Email', email, Mail], ['Website', website, Globe2]]} />
-          <BodyContent post={post} />
-          <ImageStrip images={images.slice(1)} label="Business showcase" />
-        </article>
-        <aside className="space-y-5">
-          {mapSrc ? <MapBox src={mapSrc} label={address || post.title} /> : <ContactAction website={website} phone={phone} email={email} />}
-          {mapSrc ? <ContactAction website={website} phone={phone} email={email} /> : null}
-          <RelatedPanel task="listing" post={post} related={related} compact />
-        </aside>
-      </div>
-    </section>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[var(--editable-container)] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="min-w-0 space-y-6">
+            <article className="rounded-[1.6rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_14px_44px_rgba(27,21,48,0.07)] sm:p-8">
+              <h2 className="flex items-center gap-2 border-b border-[var(--editable-border)] pb-4 text-lg font-black tracking-[-0.02em]"><FileText className="h-5 w-5 text-[var(--detail-accent)]" /> Description</h2>
+              
+              <BodyContent post={post} compact />
+            </article>
+
+            {images.length > 1 ? (
+              <article className="rounded-[1.6rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_14px_44px_rgba(27,21,48,0.07)] sm:p-8">
+                <h2 className="flex items-center gap-2 border-b border-[var(--editable-border)] pb-4 text-lg font-black tracking-[-0.02em]"><Camera className="h-5 w-5 text-[var(--detail-accent)]" /> Photos</h2>
+                <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {images.slice(1, 7).map((image, index) => (
+                    <img key={`${image}-${index}`} src={image} alt="" className="aspect-[4/3] w-full rounded-[1.1rem] object-cover ring-1 ring-[var(--editable-border)] transition duration-300 hover:scale-[1.02]" />
+                  ))}
+                </div>
+              </article>
+            ) : null}
+
+            {tags.length ? (
+              <article className="rounded-[1.6rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_14px_44px_rgba(27,21,48,0.07)] sm:p-8">
+                <h2 className="flex items-center gap-2 border-b border-[var(--editable-border)] pb-4 text-lg font-black tracking-[-0.02em]"><Tag className="h-5 w-5 text-[var(--detail-accent)]" /> Tags</h2>
+                <div className="mt-5 flex flex-wrap gap-2.5">
+                  {tags.map((tag) => (
+                    <Link key={tag} href={`/search?q=${encodeURIComponent(tag)}`} className="inline-flex items-center gap-2 rounded-full border border-[var(--editable-border)] bg-[var(--detail-bg)] px-4 py-2 text-xs font-black transition hover:border-[var(--detail-accent)] hover:text-[var(--detail-accent)]">
+                      <Tag className="h-3.5 w-3.5 text-[var(--detail-accent)]" /> {tag}
+                    </Link>
+                  ))}
+                </div>
+              </article>
+            ) : null}
+          </div>
+
+          <aside className="space-y-5">
+            <div className="rounded-[1.6rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_14px_44px_rgba(27,21,48,0.07)]">
+              <h2 className="flex items-center gap-2 border-b border-[var(--editable-border)] pb-4 text-lg font-black tracking-[-0.02em]"><Building2 className="h-5 w-5 text-[var(--detail-accent)]" /> Business Info</h2>
+              <div className="mt-5 grid gap-4">
+                {email ? (
+                  <a href={`mailto:${email}`} className="group flex items-start gap-3 text-sm font-bold opacity-80 transition hover:opacity-100">
+                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--slot4-accent-soft,#ede9fe)] text-[var(--detail-accent)]"><Mail className="h-4 w-4" /></span>
+                    <span className="break-all pt-2">{email}</span>
+                  </a>
+                ) : null}
+                {phone ? (
+                  <a href={`tel:${phone}`} className="group flex items-start gap-3 text-sm font-bold opacity-80 transition hover:opacity-100">
+                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--slot4-accent-soft,#ede9fe)] text-[var(--detail-accent)]"><Phone className="h-4 w-4" /></span>
+                    <span className="pt-2">{phone}</span>
+                  </a>
+                ) : null}
+                {website ? (
+                  <Link href={website} target="_blank" rel="nofollow noopener noreferrer" className="group flex items-start gap-3 text-sm font-bold opacity-80 transition hover:opacity-100">
+                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--slot4-accent-soft,#ede9fe)] text-[var(--detail-accent)]"><Globe2 className="h-4 w-4" /></span>
+                    <span className="break-all pt-2">{website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                  </Link>
+                ) : null}
+                {address ? (
+                  <p className="flex items-start gap-3 text-sm font-bold opacity-80">
+                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--slot4-accent-soft,#ede9fe)] text-[var(--detail-accent)]"><MapPin className="h-4 w-4" /></span>
+                    <span className="pt-2 leading-6">{address}</span>
+                  </p>
+                ) : null}
+                {!email && !phone && !website && !address ? <p className="text-sm font-semibold opacity-60">Contact details will appear here once the owner adds them.</p> : null}
+              </div>
+              {email ? (
+                <a href={`mailto:${email}`} className="mt-6 flex h-12 items-center justify-center gap-2 rounded-full border border-[var(--detail-accent)]/50 text-sm font-black text-[var(--detail-accent)] transition hover:bg-[var(--detail-accent)] hover:text-white">
+                  <Mail className="h-4 w-4" /> Inbox
+                </a>
+              ) : null}
+            </div>
+
+            {mapSrc ? <MapBox src={mapSrc} label={address || post.title} /> : null}
+
+            <div className="rounded-[1.6rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_14px_44px_rgba(27,21,48,0.07)]">
+              <h2 className="flex items-center gap-2 border-b border-[var(--editable-border)] pb-4 text-lg font-black tracking-[-0.02em]"><CheckCircle2 className="h-5 w-5 text-[var(--detail-accent)]" /> Claim Listing</h2>
+              <p className="mt-4 text-sm font-bold leading-6 opacity-70">Is this your business?</p>
+              <p className="mt-2 text-sm leading-6 opacity-60">Claiming your listing is the best way to manage your presence and keep details up to date.</p>
+              <Link href="/contact" className="mt-5 inline-flex items-center justify-center rounded-full bg-[var(--detail-accent)] px-6 py-3 text-sm font-black text-white transition hover:bg-[#5b21b6]">Claim Now</Link>
+            </div>
+
+            <RelatedPanel task="listing" post={post} related={related} compact />
+          </aside>
+        </div>
+      </section>
+    </>
   )
 }
 
@@ -371,21 +462,6 @@ function BodyContent({ post, compact = false, tone = 'default' }: { post: SitePo
   return <div className={`article-content mt-8 max-w-none ${compact ? 'text-base leading-8' : 'text-lg leading-9'} ${toneClass}`} dangerouslySetInnerHTML={{ __html: formatPlainText(getBody(post)) }} />
 }
 
-function InfoGrid({ items }: { items: Array<[string, string, typeof MapPin]> }) {
-  const visible = items.filter(([, value]) => value)
-  if (!visible.length) return null
-  return (
-    <div className="mt-8 grid gap-3 sm:grid-cols-2">
-      {visible.map(([label, value, Icon]) => (
-        <div key={label} className="rounded-[1.5rem] border border-[var(--editable-border)] bg-[var(--detail-bg)] p-4">
-          <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] opacity-55"><Icon className="h-4 w-4" /> {label}</div>
-          <p className="mt-2 break-words text-sm font-bold leading-6 opacity-80">{value}</p>
-        </div>
-      ))}
-    </div>
-  )
-}
-
 function ImageStrip({ images, label, large = false }: { images: string[]; label: string; large?: boolean }) {
   if (!images.length) return null
   return (
@@ -425,17 +501,16 @@ function BadgeLine({ label, value }: { label: string; value: string }) {
   return <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm"><span className="font-black uppercase tracking-[0.16em] opacity-60">{label}</span><span className="font-black">{value}</span></div>
 }
 
-function RelatedPanel({ task, post, related, compact = false }: { task: TaskKey; post: SitePost; related: SitePost[]; compact?: boolean }) {
+function RelatedPanel({ task, related, compact = false }: { task: TaskKey; post?: SitePost; related: SitePost[]; compact?: boolean }) {
   const taskConfig = getTaskConfig(task)
   return (
     <aside className="min-w-0 space-y-5">
       {!compact ? (
         <div className="rounded-[2rem] border border-[var(--editable-border)] bg-white/70 p-5 backdrop-blur">
-          <p className="text-xs font-black uppercase tracking-[0.22em] opacity-55">About this post</p>
+          <p className="text-xs font-black uppercase tracking-[0.22em] opacity-55">About this listing</p>
           <div className="mt-4 grid gap-3 text-sm font-bold opacity-75">
-            <p className="inline-flex items-center gap-2"><Tag className="h-4 w-4" /> Task: {taskConfig?.label || task}</p>
-            <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Site: {SITE_CONFIG.name}</p>
-            {post.publishedAt ? <p>Published: {new Date(post.publishedAt).toLocaleDateString()}</p> : null}
+            <p className="inline-flex items-center gap-2"><Tag className="h-4 w-4" /> Category: {taskConfig?.label || task}</p>
+            <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Listed on {SITE_CONFIG.name}</p>
           </div>
         </div>
       ) : null}
