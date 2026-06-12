@@ -10,11 +10,11 @@ import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 function getTone(kind: ReturnType<typeof getProductKind>) {
   if (kind === 'directory') {
     return {
-      shell: 'bg-[#f8fbff] text-slate-950',
-      panel: 'border border-slate-200 bg-white',
-      soft: 'border border-slate-200 bg-slate-50',
-      muted: 'text-slate-600',
-      action: 'bg-slate-950 text-white hover:bg-slate-800',
+      shell: 'bg-[#f7f7fb] text-[#1b1530]',
+      panel: 'border border-black/10 bg-white',
+      soft: 'border border-black/[0.07] bg-[#ede9fe]',
+      muted: 'text-[#5b524a]',
+      action: 'bg-[#6d28d9] text-white hover:bg-[#5b21b6]',
     }
   }
   if (kind === 'editorial') {
@@ -76,11 +76,11 @@ export default function ContactPage() {
 
   return (
     <EditableSiteShell className={tone.shell}>
-      <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <section className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-70">{pagesContent.contact.eyebrow}</p>
-            <h1 className="mt-4 text-5xl font-semibold tracking-[-0.05em]">{pagesContent.contact.title}</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6d28d9]">{pagesContent.contact.eyebrow}</p>
+            <h1 className="mt-4 text-4xl font-extrabold tracking-[-0.05em] sm:text-5xl">{pagesContent.contact.title}</h1>
             <p className={`mt-5 max-w-2xl text-sm leading-8 ${tone.muted}`}>{pagesContent.contact.description}</p>
             <div className="mt-8 space-y-4">
               {lanes.map((lane) => (
